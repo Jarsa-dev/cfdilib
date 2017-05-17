@@ -78,6 +78,10 @@
                     {% endif %}
                 </cfdi:Impuestos>
             {% endif %}
+             {% if line.customs_number %}
+                <cfdi:InformacionAduanera
+                    NumeroPedimento="{{ line.customs_number }}"/>
+            {% endif %}
         </cfdi:Concepto>
         {% endfor %}
     </cfdi:Conceptos>
