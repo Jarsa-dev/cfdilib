@@ -69,19 +69,28 @@
         {% endif %}
     </cfdi:Receptor>
     {% if inv.invoice_lines %}
-    <cfdi:Conceptos>
-        {% for invoice_line in inv.invoice_lines %}
-        <cfdi:Concepto
-            cantidad="{{ invoice_line.quantity }}"
-            descripcion="{{ (invoice_line.name) }}"
-            importe="{{ invoice_line.subtotal_wo_discount or 0.0 }}"
-            {% if invoice_line.code %}
-                noIdentificacion="{{ (invoice_line.code ) or 'S/N' }}"
-            {% endif %}
-            unidad="{{ invoice_line.unit }}"
-            valorUnitario="{{ invoice_line.price_unit or 0.0 }}"/>
-        {% endfor %}
-    </cfdi:Conceptos>
+   <cfdi:Conceptos>
+       {% for invoice_line in inv.invoice_lines %}
+       <cfdi:Concepto
+           cantidad="{{ invoice_line.quantity }}"
+           descripcion="{{ (invoice_line.name) }}"
+           importe="{{ invoice_line.subtotal_wo_discount or 0.0 }}"
+           {% if invoice_line.code %}
+               noIdentificacion="{{ (invoice_line.code ) or 'S/N' }}"
+           {% endif %}
+           unidad="{{ invoice_line.unit }}"
+           valorUnitario="{{ invoice_line.price_unit or 0.0 }}">
+           {% for custom in invoice_line.customs %}
+           {% if invoice_line.product_id == custom.product_id %}
+               <cfdi:InformacionAduanera
+                   aduana="{{ custom.customs }}"
+                   fecha="{{ custom.customs_date }}"
+                   numero="{{ custom.customs_number }}"/>
+          {% endif %}
+          {% endfor %}
+       </cfdi:Concepto>
+       {% endfor %}
+   </cfdi:Conceptos>
     {% endif %}
     <cfdi:Impuestos
         {% if inv.taxes.total_transferred  or inv.taxes.total_withhold %}
